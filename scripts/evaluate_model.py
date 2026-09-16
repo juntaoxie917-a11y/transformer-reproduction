@@ -1,4 +1,5 @@
-from pathlib import Path
+import json
+from src.paths import DATA_DIR, TOKENIZER_PATH, CHECKPOINT_DIR, RESULT_DIR, ensure_artifact_dirs
 import torch
 
 from config import Config
@@ -25,11 +26,11 @@ def main():
     # 2. Paths
     # ------------------------------------------------------------
 
-    data_dir = Path(__file__).parent.parent / "data" / "processed"
-    tokenizer_path = Path(__file__).parent.parent / "data" / "tokenizer" / "bpe.model"
-    checkpoint_path = Path(__file__).parent.parent / "checkpoints" / "best.pt"
-    result_dir = Path(__file__).parent.parent / "results"
-    result_dir.mkdir(parent=True, exist_ok=True)
+    data_dir = DATA_DIR
+    tokenizer_path = TOKENIZER_PATH
+    checkpoint_path = CHECKPOINT_DIR / "best.pt"
+    result_dir = RESULT_DIR
+    ensure_artifact_dirs()
 
     # ------------------------------------------------------------
     # 3. Load tokenizer
@@ -121,6 +122,12 @@ def main():
     print(
         f"Translations saved to: "
         f"{translation_path}"
+    )
+
+    (result_dir / "metrics.json").write_text(
+        json.dumps({"test_bleu": bleu_score, "epoch": checkpoint["epoch"] + 1,
+                    "val_loss": checkpoint["val_loss"]}, indent=2) + "\n",
+        encoding="utf-8",
     )
 
     print("Evaluation finished.")

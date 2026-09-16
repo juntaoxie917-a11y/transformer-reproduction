@@ -1,4 +1,4 @@
-from pathlib import Path
+from src.paths import DATA_DIR
 from datasets import load_dataset
 
 
@@ -6,7 +6,7 @@ from datasets import load_dataset
 # Paths
 # ------------------------------------------------------------
 
-OUTPUT_DIR = Path(__file__).parent.parent / "data" / "processed"
+OUTPUT_DIR = DATA_DIR
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 

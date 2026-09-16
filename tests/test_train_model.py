@@ -1,5 +1,5 @@
+from src.paths import DATA_DIR, TOKENIZER_PATH, CHECKPOINT_DIR, RESULT_DIR, ensure_artifact_dirs
 from dataclasses import dataclass
-from pathlib import Path
 
 import torch
 from torch import nn
@@ -48,11 +48,11 @@ def main():
     # 2. Paths
     # ------------------------------------------------------------
 
-    data_dir = Path(__file__).parent.parent / "data" / "processed"
-    tokenizer_path = Path(__file__).parent.parent / "data" / "tokenizer" / "bpe.model"
-    checkpoint_dir = Path(__file__).parent.parent / "checkpoints"
+    data_dir = DATA_DIR
+    tokenizer_path = TOKENIZER_PATH
+    checkpoint_dir = CHECKPOINT_DIR
 
-    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    ensure_artifact_dirs()
 
     # ------------------------------------------------------------
     # 3. Load tokenizer

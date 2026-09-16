@@ -1,3 +1,4 @@
+from dataclasses import asdict, is_dataclass
 from pathlib import Path
 import torch
 
@@ -86,7 +87,7 @@ def validate(
             tgt_y = tgt[:, 1:]
 
             src_mask = make_src_mask(src, pad_idx)
-            tgt_mask = make_tgt_mask(tgt, pad_idx)
+            tgt_mask = make_tgt_mask(tgt_input, pad_idx)
 
             hidden = model(src, tgt_input, src_mask, tgt_mask)
             logits = model.generator(hidden)
@@ -129,7 +130,7 @@ def save_checkpoint(
     }
 
     if config is not None:
-        checkpoint["config"] = config
+        checkpoint["config"] = asdict(config) if is_dataclass(config) else config
 
     torch.save(checkpoint, path)
 

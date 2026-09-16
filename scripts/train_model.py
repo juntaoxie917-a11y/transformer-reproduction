@@ -1,4 +1,5 @@
-from pathlib import Path
+import json
+from src.paths import DATA_DIR, TOKENIZER_PATH, CHECKPOINT_DIR, RESULT_DIR, ensure_artifact_dirs
 
 import torch
 from torch import nn
@@ -29,11 +30,11 @@ def main():
     # 2. Paths
     # ------------------------------------------------------------
 
-    data_dir = Path(__file__).parent.parent / "data" / "processed"
-    tokenizer_path = Path(__file__).parent.parent / "data" / "tokenizer" / "bpe.model"
-    checkpoint_dir = Path(__file__).parent.parent / "checkpoints"
+    data_dir = DATA_DIR
+    tokenizer_path = TOKENIZER_PATH
+    checkpoint_dir = CHECKPOINT_DIR
 
-    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    ensure_artifact_dirs()
 
     # ------------------------------------------------------------
     # 3. Load tokenizer
@@ -116,6 +117,7 @@ def main():
     # ------------------------------------------------------------
 
     best_val_loss = float("inf")
+    history = []
 
     for epoch in range(config.num_epochs):
         train_loss = train_one_epoch(
@@ -145,6 +147,12 @@ def main():
             f"Train Loss: {train_loss:.4f} | "
             f"Val Loss: {val_loss:.4f} | "
             f"LR: {optimizer.param_groups[0]['lr']:.6e}"
+        )
+
+        history.append({"epoch": epoch + 1, "train_loss": train_loss,
+                        "val_loss": val_loss, "lr": optimizer.param_groups[0]["lr"]})
+        (RESULT_DIR / "training_history.json").write_text(
+            json.dumps(history, indent=2) + "\n", encoding="utf-8"
         )
 
         # --------------------------------------------------------

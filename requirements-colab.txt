@@ -1,0 +1,5 @@
+# Use Colab's preinstalled CUDA-enabled torch.
+datasets==3.6.0
+sentencepiece
+sacrebleu
+tqdm

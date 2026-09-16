@@ -1,4 +1,5 @@
-from pathlib import Path
+import shutil
+from src.paths import DATA_DIR, TOKENIZER_WORK_DIR, TOKENIZER_PATH, ensure_artifact_dirs
 import sentencepiece as spm
 
 
@@ -6,8 +7,7 @@ import sentencepiece as spm
 # Paths
 # ------------------------------------------------------------
 
-DATA_DIR = Path(__file__).parent.parent / "data" / "processed"
-TOKENIZER_DIR = Path(__file__).parent.parent / "data" / "tokenizer"
+TOKENIZER_DIR = TOKENIZER_WORK_DIR
 TOKENIZER_DIR.mkdir(parents=True, exist_ok=True)
 
 SRC_PATH = DATA_DIR / "train.en"
@@ -128,6 +128,11 @@ def test_tokenizer():
 # ------------------------------------------------------------
 
 def main():
+    ensure_artifact_dirs()
+    if TOKENIZER_PATH.exists():
+        print(f"Reusing saved tokenizer: {TOKENIZER_PATH}")
+        return
+
     if not SRC_PATH.exists():
         raise FileNotFoundError(
             f"{SRC_PATH} does not exist. "
@@ -143,6 +148,8 @@ def main():
     build_shared_corpus()
     train_tokenizer()
     test_tokenizer()
+    shutil.copy2(MODEL_PREFIX.with_suffix(".model"), TOKENIZER_PATH)
+    print(f"Persistent tokenizer: {TOKENIZER_PATH}")
 
 
 if __name__ == "__main__":
