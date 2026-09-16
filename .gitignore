@@ -3,7 +3,7 @@
 .DS_Store
 
 data/*
-!data/README.md
+!data/.gitkeep
 
 __pycache__/
 src/__pycache__/
